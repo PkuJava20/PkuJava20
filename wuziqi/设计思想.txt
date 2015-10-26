@@ -1,0 +1,27 @@
+用到的主要数组：
+1.private int[][][][] states = new int[17][17][2][8];   //定义棋盘状态
+2.private point[]   record=new point[225];              //记录已经下过的棋
+3.private int len=0;                                    //记录已经下了子的个数
+用到的主要方法：
+1.public void statesinit()                              //用来初始化states和record数组
+2.public boolean isWon(int posX, int posY, String ico)  //判断输赢
+  思想是：一共有8个方向，如果方向i和7-i方向上的状态值大于等于5时则胜
+        for(int t=1;t<4;t++){
+        if(states[i][j][col][t]+states[i][j][col][7-t]-1>max)  max= states[i][j][col][t]+states[i][j][col][7-t]-1;      
+        }
+        if(max>=5)    return true;
+3.public boolean bianjievalid(int i,int j)               //判断下标有没有越界并且是否为空能否下棋
+4.public int maxValue(int t, int k, String ico)          //去最大预算值
+5.public int[] zhouwei(int x,int y,String col)           //周围8个点的最佳情况
+6.public void shuaxin(int k1,int t,String ico)           //刷新状态数组states
+要到设计思想
+用states数组记载棋局的状态，每个棋子8个方向；而用record数组记录已经下过的字的信息（每个子包括坐标和颜色）。
+每个子下完之后就要刷新棋盘的状态用shuanxin方法；在计算机下子时不需要遍历整个棋盘的情况，
+只需要遍历record数组，预判取每个子的周围的八个棋子的情况，利用步长为2就可以找出堵人的最好棋和进攻的最好棋，
+（好坏的标准是依据同色字的长度），如果进攻好于防守则攻。可以说是攻防兼备，并且不需要遍历整个棋盘，这样的话，
+自认为可以节省时间。总之我设计的思想是局部厮杀。
+不足之处：
+1.整个下棋思想只是往后想一步，还是很弱的，稍有心机就干不过了
+2.因为个人疏忽，没写边界情况判断（当边界处于优势时，他会一直网边界杀，很可能下几步废棋），但如果在棋盘中央厮杀
+则问题不存在。
+git 
