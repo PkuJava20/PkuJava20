@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/bootstrapv3.css">
+    <script src="/bower_components/jquery.js" type="text/javascript"></script>
+    <script src="/bower_components/bootstrapv3.js"></script>
+    <script src="/bower_components/bootstrap-paginator.js"></script>
+</head>
+<body>
+<div class="clearfix page-nav">
+    <% if(user) {%>
+    <div class="pull-left nav-username">欢迎你，<%= user.username%>! </div>
+    <div class="pull-left"><a href="/post">发表</a></div>
+    <div class="pull-right nav-quit"><a href="/quit">退出</a></div>
+    <% }else{ %>
+    <div class="pull-right nav-register"><a href="/register">注册</a></div>
+    <div class="pull-right nav-login"><a href="/login">登录</a></div>
+    <% }%>
+</div>
+<div class="container">
+    <div class="row">
+        <table class="table table-striped">
+            <caption>我的笔记列表</caption>
+            <thead>
+            <tr>
+                <th>标题</th>
+                <th>标签</th>
+                <th>日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% notes.forEach(function(note){%>
+            <tr>
+                <td>
+                    <a href="/detail/<%= note._id %>"><%= note.title %></a>
+                </td>
+                <td><%= note.tag %></td>
+                <td><%= note.createTime%></td>
+            </tr>
+            <%});%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="text-center">
+<nav>
+    <ul class="pagination">
+        <li>
+            <a href="/list?pageNo=0" aria-label="Previous">
+            <span aria-hidden="true">首页</span>
+        </a>
+        </li>
+        <%
+        var currentPage = 0;
+        var totalPage = 0;
+        var totalNum = 0
+        var num = 3;//每页笔记条数
+        var num2 = 5;//分页条最多显示的页数
+        if(pageNo)currentPage = parseInt(pageNo);//当前页号
+        if(total){
+            totalNum = parseInt(total);//总条目数
+            totalPage = Math.ceil(totalNum/num);//总页数
+        }
+        if(currentPage){  //判断当前页是否存在上一页
+        %>
+        <li>
+            <a href="/list?pageNo=<%=currentPage-1;%>" aria-label="Previous">
+            <span aria-hidden="true">上页</span>
+        </a>
+        </li>
+        <%}
+        var active="";
+        var n = totalPage>num2?num2:totalPage;//取总页数和5的较小值
+        var begin = totalPage-currentPage<n?totalPage-n:currentPage;//确定分页条的起始点
+        for(i=0;i<n;i++){   //将被选中的页加标记
+            if(begin+i==currentPage)
+            active="active";
+            else
+                active="";
+        %>
+        <li class=<%=active;%>><a href="/list?pageNo=<%=begin+i;%>"> <%=begin+i+1;%> </a></li>
+        <%}if(currentPage!=totalPage-1){//判断当前页是否存在下一页%>
+        <li>
+            <a href="/list?pageNo=<%=currentPage+1;%>" aria-label="Next">
+            <span aria-hidden="true">下页</span>
+        </a>
+        </li>
+        <%}%>
+        <li>
+            <a href="/list?pageNo=<%=totalPage-1;%>" aria-label="Next">
+            <span aria-hidden="true">末页</span>
+        </a>
+        </li>
+    </ul>
+</nav>
+</div>
+</body>
+</html>
