@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>Wysiwyg &amp; Markdown Editor - Ace Admin</title>
+
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="/assets/css/font-awesome.css" />
+
+    <!-- page specific plugin styles -->
+    <link rel="stylesheet" href="/assets/css/jquery-ui.custom.css" />
+
+    <!-- text fonts -->
+    <link rel="stylesheet" href="/assets/css/ace-fonts.css" />
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="/assets/css/ace.css" class="ace-main-stylesheet" id="main-ace-style" />
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="/assets/css/ace-part2.css" class="ace-main-stylesheet" />
+    <![endif]-->
+
+    <!--[if lte IE 9]>
+    <link rel="stylesheet" href="/assets/css/ace-ie.css" />
+    <![endif]-->
+
+    <!-- inline styles related to this page -->
+
+    <!-- ace settings handler -->
+    <script src="/assets/js/ace-extra.js"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+    <!--[if lte IE 8]>
+    <script src="/assets/js/html5shiv.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div id="navbar" class="navbar navbar-default">
+
+    <div class="navbar-container" id="navbar-container">
+        <div class="navbar-header pull-left">
+            <a class="navbar-brand">
+                <small>
+                    <i class="fa fa-leaf"></i>
+                    在线日记本
+                </small>
+            </a>
+        </div>
+        <div class=" pull-right">
+            <ul class="nav ace-nav">
+                <li>
+                    <a href="/" class="btn btn-pink btn-minier no-radius">
+                        <i class="ace-icon fa fa-share bigger-160"></i>
+                        返回笔记列表
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/quit" class="btn  btn-purple btn-minier">
+                        <i class="ace-icon fa fa-undo bigger-160"></i>
+                        退出
+                    </a>
+                </li>
+
+                <!-- #section:basics/navbar.user_menu -->
+                <li class="light-blue">
+                    <a data-toggle="dropdown" class="dropdown-toggle">
+                        <img class="nav-user-photo" src="/assets/avatars/user.jpg" alt="Jason's Photo" />
+								<span class="user-info">
+									<small>欢迎,</small>
+                                    <%= user.username%>
+								</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div><!-- /.navbar-container -->
+</div>
+
+<div class="page-header">
+    <h1>撰写日记 </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+        <!-- PAGE CONTENT BEGINS -->
+        <h4 class="header green clearfix">
+            写点什么吧！
+									<span class="block pull-right">
+										<small class="grey middle">风格变换: &nbsp;</small>
+
+										<span class="btn-toolbar inline middle no-margin">
+											<span data-toggle="buttons" class="btn-group no-margin">
+												<label class="btn btn-sm btn-yellow">
+                                                    1
+                                                    <input type="radio" value="1" />
+                                                </label>
+
+												<label class="btn btn-sm btn-yellow active">
+                                                    2
+                                                    <input type="radio" value="2" />
+                                                </label>
+
+												<label class="btn btn-sm btn-yellow">
+                                                    3
+                                                    <input type="radio" value="3" />
+                                                </label>
+
+												<label class="btn btn-sm btn-yellow">
+                                                    4
+                                                    <input type="radio" value="4" />
+                                                </label>
+											</span>
+										</span>
+									</span>
+        </h4>
+
+       <form method="post">
+            <div class="form-group">
+                <input type="text" class="form-control" name="title" placeholder="标题">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="tag" placeholder="标签">
+            </div>
+            <div class="form-group">
+                <textarea class="wysiwyg-editor form-control" name="content" id="editor1" placeholder="文章内容" rows="8"></textarea>
+            </div>
+            <button type="submit" class="btn btn-default center-block">发表</button>
+        </form>
+
+<!--       <div class="wysiwyg-editor" id="editor1"></div>-->
+
+        <div class="hr hr-double dotted"></div>
+
+        <script type="text/javascript">
+            var $path_assets = "/assets";//this will be used in loading jQuery UI if needed!
+        </script>
+
+        <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<!-- basic scripts -->
+
+<!--[if !IE]> -->
+<script type="text/javascript">
+    window.jQuery || document.write("<script src='/assets/js/jquery.js'>"+"<"+"/script>");
+</script>
+
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script type="text/javascript">
+    window.jQuery || document.write("<script src='/assets/js/jquery1x.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+<script type="text/javascript">
+    if('ontouchstart' in document.documentElement) document.write("<script src='/assets/js/jquery.mobile.custom.js'>"+"<"+"/script>");
+</script>
+<script src="/assets/js/bootstrap.js"></script>
+
+<!-- page specific plugin scripts -->
+<script src="/assets/js/jquery-ui.custom.js"></script>
+<script src="/assets/js/jquery.ui.touch-punch.js"></script>
+<script src="/assets/js/markdown/markdown.js"></script>
+<script src="/assets/js/markdown/bootstrap-markdown.js"></script>
+<script src="/assets/js/jquery.hotkeys.js"></script>
+<script src="/assets/js/bootstrap-wysiwyg.js"></script>
+<script src="/assets/js/bootbox.js"></script>
+
+<!-- ace scripts -->
+<script src="/assets/js/ace/elements.scroller.js"></script>
+<script src="/assets/js/ace/elements.colorpicker.js"></script>
+<script src="/assets/js/ace/elements.fileinput.js"></script>
+<script src="/assets/js/ace/elements.typeahead.js"></script>
+<script src="/assets/js/ace/elements.wysiwyg.js"></script>
+<script src="/assets/js/ace/elements.spinner.js"></script>
+<script src="/assets/js/ace/elements.treeview.js"></script>
+<script src="/assets/js/ace/elements.wizard.js"></script>
+<script src="/assets/js/ace/elements.aside.js"></script>
+<script src="/assets/js/ace/ace.js"></script>
+<script src="/assets/js/ace/ace.ajax-content.js"></script>
+<script src="/assets/js/ace/ace.touch-drag.js"></script>
+<script src="/assets/js/ace/ace.sidebar.js"></script>
+<script src="/assets/js/ace/ace.sidebar-scroll-1.js"></script>
+<script src="/assets/js/ace/ace.submenu-hover.js"></script>
+<script src="/assets/js/ace/ace.widget-box.js"></script>
+<script src="/assets/js/ace/ace.settings.js"></script>
+<script src="/assets/js/ace/ace.settings-rtl.js"></script>
+<script src="/assets/js/ace/ace.settings-skin.js"></script>
+<script src="/assets/js/ace/ace.widget-on-reload.js"></script>
+<script src="/assets/js/ace/ace.searchbox-autocomplete.js"></script>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+    jQuery(function($){
+
+        $('textarea[data-provide="markdown"]').each(function(){
+            var $this = $(this);
+
+            if ($this.data('markdown')) {
+                $this.data('markdown').showEditor();
+            }
+            else $this.markdown()
+
+            $this.parent().find('.btn').addClass('btn-white');
+        })
+
+        function showErrorAlert (reason, detail) {
+            var msg='';
+            if (reason==='unsupported-file-type') { msg = "Unsupported format " +detail; }
+            else {
+                //console.log("error uploading file", reason, detail);
+            }
+            $('<div class="alert"> <button type="button" class="close" data-dismiss="alert">&times;</button>'+
+                    '<strong>File upload error</strong> '+msg+' </div>').prependTo('#alerts');
+        }
+
+        //$('#editor1').ace_wysiwyg();//this will create the default editor will all buttons
+
+        //but we want to change a few buttons colors for the third style
+        $('#editor1').ace_wysiwyg({
+            toolbar:
+                    [
+                        'fontSize',
+                        null,
+                        {name:'undo', className:'btn-grey'},
+                        {name:'redo', className:'btn-grey'}
+                    ],
+            'wysiwyg': {
+                fileUploadError: showErrorAlert
+            }
+        }).prev().addClass('wysiwyg-style2');
+
+        $('#editor2').css({'height':'200px'}).ace_wysiwyg({
+            toolbar_place: function(toolbar) {
+                return $(this).closest('.widget-box')
+                        .find('.widget-header').prepend(toolbar)
+                        .find('.wysiwyg-toolbar').addClass('inline');
+            },
+            toolbar:
+                    [
+                        'bold',
+                        {name:'italic' , title:'Change Title!', icon: 'ace-icon fa fa-leaf'},
+                        'strikethrough',
+                        null,
+                        'insertunorderedlist',
+                        'insertorderedlist',
+                        null,
+                        'justifyleft',
+                        'justifycenter',
+                        'justifyright'
+                    ],
+            speech_button: false
+        });
+
+        $('[data-toggle="buttons"] .btn').on('click', function(e){
+            var target = $(this).find('input[type=radio]');
+            var which = parseInt(target.val());
+            var toolbar = $('#editor1').prev().get(0);
+            if(which >= 1 && which <= 4) {
+                toolbar.className = toolbar.className.replace(/wysiwyg\-style(1|2)/g , '');
+                if(which == 1) $(toolbar).addClass('wysiwyg-style1');
+                else if(which == 2) $(toolbar).addClass('wysiwyg-style2');
+                if(which == 4) {
+                    $(toolbar).find('.btn-group > .btn').addClass('btn-white btn-round');
+                } else $(toolbar).find('.btn-group > .btn-white').removeClass('btn-white btn-round');
+            }
+        });
+
+        if ( typeof jQuery.ui !== 'undefined' && ace.vars['webkit'] ) {
+
+            var lastResizableImg = null;
+            function destroyResizable() {
+                if(lastResizableImg == null) return;
+                lastResizableImg.resizable( "destroy" );
+                lastResizableImg.removeData('resizable');
+                lastResizableImg = null;
+            }
+
+            var enableImageResize = function() {
+                $('.wysiwyg-editor')
+                        .on('mousedown', function(e) {
+                            var target = $(e.target);
+                            if( e.target instanceof HTMLImageElement ) {
+                                if( !target.data('resizable') ) {
+                                    target.resizable({
+                                        aspectRatio: e.target.width / e.target.height,
+                                    });
+                                    target.data('resizable', true);
+
+                                    if( lastResizableImg != null ) {
+                                        //disable previous resizable image
+                                        lastResizableImg.resizable( "destroy" );
+                                        lastResizableImg.removeData('resizable');
+                                    }
+                                    lastResizableImg = target;
+                                }
+                            }
+                        })
+                        .on('click', function(e) {
+                            if( lastResizableImg != null && !(e.target instanceof HTMLImageElement) ) {
+                                destroyResizable();
+                            }
+                        })
+                        .on('keydown', function() {
+                            destroyResizable();
+                        });
+            }
+
+            enableImageResize();
+
+        }
+
+
+    });
+</script>
+
+<!-- the following scripts are used in demo only for onpage help and you don't need them -->
+<link rel="stylesheet" href="/assets/css/ace.onpage-help.css" />
+<link rel="stylesheet" href="/docs/assets/js/themes/sunburst.css" />
+
+<script type="text/javascript"> ace.vars['base'] = '..'; </script>
+<script src="/assets/js/ace/elements.onpage-help.js"></script>
+<script src="/assets/js/ace/ace.onpage-help.js"></script>
+<script src="/docs/assets/js/rainbow.js"></script>
+<script src="/docs/assets/js/language/generic.js"></script>
+<script src="/docs/assets/js/language/html.js"></script>
+<script src="/docs/assets/js/language/css.js"></script>
+<script src="/docs/assets/js/language/javascript.js"></script>
+</body>
+</html>
