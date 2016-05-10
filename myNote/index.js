@@ -3,23 +3,144 @@
  */
 //加载依赖库
     "use strict"
+var Waterline = require('waterline');
+var mysqlAdapter = require('sails-mysql');
+var mongoAdapter = require('sails-mongo');
+var moment = require('moment');
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
 var session = require('express-session');
-var moment = require('moment');
+global.tid=20;
 var querystring=require('querystring');
 var url=require('url');
+// 适配器
+var adapters = {
+    mongo: mongoAdapter,
+    mysql: mysqlAdapter,
+    default: 'mongo'
+};
+//var id=1;
+// 连接
+var connections = {
+    mongo: {
+        adapter: 'mongo',
+        url: 'mongodb://localhost/notes'
+    },
+    mysql: {
+        adapter: 'mysql',
+        url: 'mysql://root:123456@localhost/mynotes'
+    }
+};
+
+// 数据集合
+var User = Waterline.Collection.extend({
+    identity: 'user',
+    connection: 'mysql',
+    schema: true,
+    attributes: {
+        username: {
+            type: 'string',
+            // 校验器
+            required: true
+        },
+        password: {
+            type: 'string',
+            required: true
+        },
+        email: {
+            type: 'string'
+        },
+        createTime: {
+            type: 'date'
+          //defaultsTo:Date.now
+        }
+    },
+
+    beforeCreate: function(value, cb){
+        value.createTime = new Date();
+        console.log('beforeCreate executed');
+        return cb();
+    }
+});
+
+var Note = Waterline.Collection.extend({
+    identity: 'note',
+    connection: 'mongo',
+    schema: true,
+    attributes: {
+        title: {
+            type: 'string',
+            // 校验器
+            required: true
+        },
+        author: {
+            type: 'string',
+            required: true
+        },
+        tag: {
+            type: 'string',
+            required: true
+        },
+        id:{
+            type: 'integer',
+            autoIncrement: true
+        },
+        content: {
+            type: 'string',
+            required: true
+        },
+        createTime: {
+            type: 'date'
+            //defaultsTo:Date.now
+        }
+    },
+    // 生命周期回调
+        beforeCreate: function(value, cb){
+     value.createTime = new Date();
+            value.id=global.tid;
+            global.tid++;
+    // console.log('beforeCreate executed');
+           // console.log(value.id);
+     return cb();
+     }
+});
+
+var orm = new Waterline();
+
+// 加载数据集合
+orm.loadCollection(User);
+orm.loadCollection(Note);
+
+var config = {
+    adapters: adapters,
+    connections: connections
+}
+
+/*orm.initialize(config, function(err, models){
+    if(err) {
+        console.error('orm initialize failed.', err)
+        return;
+    }
+
+    // console.log('models:', models);
+    models.collections.user.create({username: 'Sid'}, function(err, user){
+        console.log('after user.create, err, user:', err, user);
+    });
+});*/
+
+
+
 //引入mongoose
-var mongoose= require('mongoose');
+/*var mongoose= require('mongoose');*/
 //引入模型
-var models=require('./models/models');
-var User = models.User;
-var Note = models.Note;
+/*var models=require('./models/models');*/
+/*var User = models.User;
+var Note = models.Note;*/
 //使用mongoose连接服务
-mongoose.connect('mongodb://localhost:27017/notes');
-mongoose.connection.on('error',console.error.bind(console,'连接数据库失败'));
+/*mongoose.connect('mongodb://localhost:27017/notes');
+mongoose.connection.on('error',console.error.bind(console,'连接数据库失败'));*/
 //创建express实例
 var app = express();
 
@@ -43,15 +164,51 @@ app.use(session({
         saveUninitialized:true
 }));
 
+
+orm.initialize(config, function(err, models){
+    if(err) {
+        console.error('orm initialize failed.', err)
+        return;
+    }
+
 app.get('/list',function(req,res){
     console.log('笔记列表');
     var pageNo = querystring.parse(url.parse(req.url).query).pageNo; //获取笔记列表序号
-    console.log(pageNo);
+   // console.log(pageNo);
     if(!pageNo)
         pageNo = 0;
     if(req.session.user){
         var username = req.session.user.username;
-        Note.where({author:username}).count(function(err,count){  //查询笔记总数
+
+
+
+        models.collections.note.count({author:username}).exec(function(err,count){
+            if(err){
+                console.log('查找笔记总数目失败：'+err);
+                return res.redirect('/');
+            }else{
+                var total = count;
+                //console.log(total);
+                models.collections.note.find({author:username}).skip(pageNo*5).limit(5).exec(function(err,notes){
+                    if(err){
+                        console.log('查找笔记列表失败：'+err);
+                        return res.redirect('/');
+                    }
+                   // console.log(notes);
+                    res.render('articlelist',{
+                        title:'我的笔记列表',
+                        user:req.session.user,
+                        notes:notes,
+                        pageNo:pageNo,
+                        total:total
+                    });
+                });
+            }
+        });//总数
+
+
+
+/*        Note.where({author:username}).count(function(err,count){  //查询笔记总数
             if(err){
                 console.log('查找笔记总数目失败：'+err);
                 return res.redirect('/');
@@ -72,7 +229,9 @@ app.get('/list',function(req,res){
                     });
                 }).skip(pageNo*5).limit(5);   //跳过前pageNo-1页的数据
             }
-        });
+        });*/
+
+
     }else{
         res.render('login',{
             title:'登录',
@@ -147,8 +306,33 @@ app.post('/register',function(req,res){
         return res.redirect('/register');
     }
 
+
+        // console.log('models:', models);
+        models.collections.user.findOne({username: username}, function(err, user){
+            if(err){
+                console.log(err);
+                return res.redirect('/register');
+            }
+            if(user){
+                msg ="用户名已经存在！";
+                console.log('用户名已经存在');
+                req.session.msg=msg;
+                return res.redirect('/register');
+            }
+            //对密码进行md5加密
+            var md5 = crypto.createHash('md5'),md5password = md5.update(password).digest('hex');
+            models.collections.user.create({username: username,password:md5password}, function(err, user){
+                if (err){
+                    console.log(err);
+                    return res.redirect('/register');
+                }
+                console.log('注册成功！');
+                return res.redirect('/');
+            });
+    });
+
     //检查用户名是否存在，如果不存在，则保存该条记录
-    User.findOne({username:username},function(err,user){
+/*    User.findOne({username:username},function(err,user){
         if(err){
             console.log(err);
             return res.redirect('/register');
@@ -174,7 +358,7 @@ app.post('/register',function(req,res){
             console.log('注册成功！');
             return res.redirect('/');
         });
-    });
+    });*/
 });
 app.get('/login', function (req,res) {
     if(req.session.user)
@@ -192,7 +376,38 @@ app.post('/login',function(req,res){
     var username= req.body.username,
         password=req.body.password;
    var msg2="";
-    User.findOne({username:username},function(err,user){
+
+//console.log('usr: '+models.collections.user.where({username: username}));
+    models.collections.user.findOne({username: username}, function(err, user){
+        if(err){
+            console.log(err);
+            return res.redirect('/login');
+        }
+        if(!user){
+            msg2 ="用户不存在！";
+            req.session.msg2=msg2;
+            console.log('用户不存在');
+            return res.redirect('/login');
+        }
+        //对密码进行md5加密
+        var md5 = crypto.createHash('md5'),md5password = md5.update(password).digest('hex');
+
+        if(user.password!==md5password){
+            msg2 ="密码错误！";
+            req.session.msg2=msg2;
+            console.log('密码错误！');
+            return res.redirect('/login');
+        }
+        console.log('登录成功！');
+        req.session.msg2="";
+        user.password=null;
+        delete user.password;
+        req.session.user=user;
+        return res.redirect('/');
+    });
+
+
+/*    User.findOne({username:username},function(err,user){
         if(err){
             console.log(err);
             return res.redirect('/login');
@@ -218,17 +433,25 @@ app.post('/login',function(req,res){
         delete user.password;
         req.session.user=user;
         return res.redirect('/');
-    });
+    });*/
 });
 
 app.post('/post',function(req,res){
-        var note=new Note({
+/*        var note=new Note({
             title:req.body.title,
             author:req.session.user.username,
             tag:req.body.tag,
             content:req.body.content
-        });
-        note.save(function(err,doc){
+        });*/
+
+    //var date=Date.now;
+        // console.log('models:', models);
+        models.collections.note.create(
+          {   title:req.body.title,
+            author:req.session.user.username,
+            tag:req.body.tag,
+            content:req.body.content
+          }, function(err, note){
             if (err){
                 console.log(err);
                 return res.redirect('/post');
@@ -236,6 +459,15 @@ app.post('/post',function(req,res){
             console.log('文章发表成功！');
             return res.redirect('/');
         });
+
+/*        note.save(function(err,doc){
+            if (err){
+                console.log(err);
+                return res.redirect('/post');
+            }
+            console.log('文章发表成功！');
+            return res.redirect('/');
+        });*/
     });
 
 
@@ -251,9 +483,28 @@ app.get('/post', function (req,res) {
         user:req.session.user
     });
 });
+
+
+
+
 app.get('/detail/:_id', function (req,res) {
     console.log("查看笔记！");
-    Note.findOne({_id:req.params._id})
+        // console.log('models:', models);
+        models.collections.note.findOne({id:req.params._id}).exec(function(err, art){
+            if(err){
+                console.log(err);
+                return res.redirect('/');
+            }
+            if(art){
+                res.render('detail',{
+                    title:'笔记详情',
+                    user:req.session.user,
+                    art:art,
+                    moment:moment
+                });}
+        });
+
+/*    Note.findOne({_id:req.params._id})
         .exec(function(err,art){
             if(err){
                 console.log(err);
@@ -266,9 +517,10 @@ app.get('/detail/:_id', function (req,res) {
                     art:art,
                 moment:moment
             });}
-        });
+        });*/
 });
 //监听3000端口
 app.listen(3000,function(req,res){
     console.log('app is running at port 3000');
+});
 });

@@ -10,7 +10,6 @@
     <script src="/bower_components/jquery.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrapv3.js"></script>
     <script src="/bower_components/bootstrap-paginator.js"></script>
-
     <!-- bootstrap & fontawesome -->
     <link rel="stylesheet" href="/assets/css/bootstrap.css" />
     <link rel="stylesheet" href="/assets/css/font-awesome.css" />
@@ -122,10 +121,10 @@
             <% notes.forEach(function(note){%>
             <tr>
                 <td>
-                    <a href="/detail/<%= note._id %>"><%= note.title %></a>
+                    <a href="/detail/<%= note.id %>"><%= note.title %></a>
                 </td>
                 <td><%= note.tag %></td>
-                <td><%= note.createTime%></td>
+                <td><%=note.createTime%></td>
             </tr>
             <%});%>
             </tbody>

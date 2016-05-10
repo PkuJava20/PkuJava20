@@ -1,51 +1,10 @@
-<!--
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/common.css">
-</head>
-<body>
-<div class="clearfix page-nav">
-    <% if(user) {%>
-    <div class="pull-left nav-username">欢迎你，<%= user.username%>! </div>
-    <div class="pull-left"><a href="/post">发表</a></div>
-    <div class="pull-right nav-return"><a href="/">返回笔记列表</a></div>
-    <div class="pull-right nav-quit"><a href="/quit">退出&nbsp&nbsp</a></div>
-    <% }else{ %>
-    <div class="pull-right nav-register"><a href="/register">注册</a></div>
-    <div class="pull-right nav-login"><a href="/login">登录</a></div>
-    <% }%>
-</div>
-<div class="text-center page-title"><%= title %></div>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-8 col-xs-offset-2">
-             <h1 class="text-center"><%=art.title%></h1>
-            <p class="text-center">
-                <span class="label label-info"><%= art.tag%></span> |
-                <span class="create-time">
-                <span class="text-bold">时间:</span>
-                <%=moment(art.createTime).locale('zh-cn').format('LL HH:mm:ss')%></span>
-            </p>
-            <p><%= art.content%></p>
-        </div>
-    </div>
-</div>
-</div>
-<script src="/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-</body>
-</html>-->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta charset="utf-8" />
-    <title>Wysiwyg &amp; Markdown Editor - Ace Admin</title>
+    <title>详细笔记</title>
 
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
