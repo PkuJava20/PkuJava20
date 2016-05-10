@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="chatwall">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="/bower_components/angular/angular.min.js"></script>
+</head>
+<body style="padding: 10px;" ng-controller="weixinCtrl">
+<h2 style="color: #7a43b6">微信墙</h2>
+        <ul class="list-group">
+    <li style="border-style: dotted;font-size: large" ng-repeat="item in chatlist" class="list-group-item">{{item}}</li>
+</ul>
+</body>
+
+<script type="text/javascript">
+    //var number=1;
+    var host = '123.206.69.165';
+    var port =9002;
+    var url = 'ws://'+host+':'+port+'/';
+    var w = new WebSocket(url);  //构建于服务器之间的连接通信
+    var chat=[];
+    var news="";
+    <!--var audioElement = document.createElement('audio');  -->
+
+    <!--audioElement.setAttribute('src', 'qqmsg.mp3');-->
+    w.onopen = function()//通过onopen事件句柄来监听socket的打开事件
+    {
+    }
+    angular.module('chatwall',[]).controller('weixinCtrl',function($scope){
+        //$scope.chatlist=chat;
+        //$scope.chatlist=[];
+               w.onmessage = function(e)//用onmessage事件句柄接受服务器传过来的数据
+         {
+         //alert("fuck");
+         var msg = e.data;
+         var d = eval('('+msg+')');
+         var content=d['xml']['Content'][0];
+         var name=d['user']['nickname'];
+         news=name+":"+content;
+         if(chat.length===0){
+         chat[0]=news;
+         }
+         else if(chat.length<5&&chat.length>0){
+         for(var i=chat.length;i>0;i--){
+         chat[i]=chat[i-1];
+         }
+         chat[0]=news;
+         }
+         else if(chat.length===5){
+         for(var i=chat.length;i>0;i--){
+         chat[i-1]=chat[i-2];
+         }
+         chat[0]=news;
+         }
+             $scope.chatlist=chat;
+             $scope.$apply();
+         }
+    })
+</script>
+</html>
